@@ -49,7 +49,7 @@
   <body>
     <div class="edit-page">
       <h1>Edit Username</h1>
-      <form action="/users" method="POST">
+      <form action="/users/<%=user[0].id %>?_method=PATCH" method="POST">
         <div class="form-group">
           <label for="username"
             >New Username:

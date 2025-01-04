@@ -11,6 +11,8 @@ app.use(methodOverride("_method"));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Create the connection to database
 const connection = mysql.createConnection({
@@ -68,23 +70,28 @@ app.get("/users/:id/edit", (req, res) => {
   }
 });
 
-// A simple SELECT query
-// try {
-//   connection.query(q, [data], (err, result) => {
-//     if (err) throw err;
-//     console.log(result);
-//   });
-// } catch (err) {
-//   console.log(err);
-// }
-
-// connection.end();
-
-// let q = "INSERT INTO user(id,username,email, password) VALUES ?";
-// let data = [];
-// for (let i = 0; i < 100; i++) {
-//   data.push(getRandUser());
-// }
+app.patch("/users/:id", (req, res) => {
+  let { id } = req.params;
+  let { username: newUsername, password: userPassword } = req.body;
+  let q = `SELECT * FROM user WHERE id = '${id}'`;
+  try {
+    connection.query(q, (err, result) => {
+      if (err) throw err;
+      let user = result[0];
+      if (userPassword != user.password) {
+        res.send("Password does not match");
+      } else {
+        q2 = `UPDATE user SET username = '${newUsername}' WHERE id = '${id}'`;
+        connection.query(q2, (err, result) => {
+          if (err) throw err;
+          res.redirect("/users");
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 // /usr/local/mysql/bin/mysql -u root -p ======= connect database to CLI
 app.listen(3000, () => {
