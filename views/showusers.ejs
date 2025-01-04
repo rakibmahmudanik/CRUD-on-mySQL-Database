@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All users</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>All Informations</h1>
+      <a href="http://localhost:3000/users/add"
+        ><div class="add-user">
+          <p>+ Add User</p>
+        </div></a
+      >
+    </header>
+    <hr />
+
+    <div class="users">
+      <% let count = 0; %> <% for(let user of users){ %>
+      <div class="user-card">
+        <div class="user-info">
+          <% count++; %>
+          <p class="card-number"><%= count %></p>
+
+          <div class="user-id">
+            <p><span>ID:</span> <%=user.id %></p>
+          </div>
+          <div class="username">
+            <p><span>Username: </span> <%=user.username %></p>
+          </div>
+          <div class="email">
+            <p><span>Email: </span><%=user.email %></p>
+          </div>
+        </div>
+        <div class="actions">
+          <a href="http://localhost:3000/users/<%= user.id %>/edit"
+            ><div class="edit-card">
+              <p>Edit</p>
+            </div></a
+          >
+          <a href="http://localhost:3000/users/delete/wjeofsijkoiwek3123"
+            ><div class="delete-card">
+              <p>Delete</p>
+            </div></a
+          >
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>
