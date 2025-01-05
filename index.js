@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const app = express();
 const methodOverride = require("method-override");
+const { v4: uuidv4 } = require("uuid");
 
 // Override with POST having ?_method=DELETE
 app.use(methodOverride("_method"));
@@ -92,8 +93,65 @@ app.patch("/users/:id", (req, res) => {
     console.log(err);
   }
 });
+app.get("/users/add", (req, res) => {
+  res.render("addusers.ejs");
+});
 
-// /usr/local/mysql/bin/mysql -u root -p ======= connect database to CLI
+app.post("/users", (req, res) => {
+  let { username, email, password } = req.body;
+  let q = `INSERT INTO user (id , username, email, password) VALUES ('${uuidv4()}', '${username}', '${email}', '${password}')`;
+  try {
+    connection.query(q, (err, result) => {
+      if (err) throw err;
+      console.log("User " + username + " was ADDED");
+      res.redirect("/users");
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get("/users/delete/:id", (req, res) => {
+  let { id } = req.params;
+
+  let q = `SELECT * FROM user WHERE id ='${id}'`;
+  try {
+    connection.query(q, (err, user) => {
+      if (err) throw err;
+      res.render("distroy.ejs", { user });
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+app.delete("/users/delete/:id", (req, res) => {
+  let { id } = req.params;
+  let { password: userPassword, username } = req.body;
+
+  let q = `SELECT * FROM user WHERE id = '${id}'`;
+  try {
+    connection.query(q, (err, result) => {
+      if (err) throw err;
+      let user = result[0];
+      if (userPassword != user.password) {
+        res.send("Password does not match");
+      } else {
+        q2 = `DELETE FROM user WHERE id = '${id}'`;
+        connection.query(q2, (err, result) => {
+          if (err) throw err;
+          console.log("User " + username + " was DELETED");
+          res.redirect("/users");
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
 });
+
+// Server start ======= nodemon index.js
+
+// connect database to CLI  =======  /usr/local/mysql/bin/mysql -u root -p
